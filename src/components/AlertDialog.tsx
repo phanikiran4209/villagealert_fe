@@ -58,7 +58,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-lg mx-auto">
+      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[95vw] mx-auto overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <div className="flex items-center gap-2">
             {getAlertTypeIcon(alert.type)}
@@ -67,18 +67,18 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
           <div className="flex justify-between items-center pt-1">
             <span 
               className={`
-                text-xs px-2 py-1 rounded-full 
+                text-xs px-2 py-1 rounded-full font-semibold shadow-sm
                 ${
-                  alert.type === 'fire' ? 'bg-fire/20 text-fire-light' :
-                  alert.type === 'medical' ? 'bg-medical/20 text-medical-light' :
-                  alert.type === 'disaster' ? 'bg-disaster/20 text-disaster-light' :
-                  'bg-accident/20 text-accident-light'
+                  alert.type === 'fire' ? 'bg-fire/20 text-fire-light shadow-fire/20' :
+                  alert.type === 'medical' ? 'bg-medical/20 text-medical-light shadow-medical/20' :
+                  alert.type === 'disaster' ? 'bg-disaster/20 text-disaster-light shadow-disaster/20' :
+                  'bg-accident/20 text-accident-light shadow-accident/20'
                 }
               `}
             >
               {alert.type} emergency
             </span>
-            <span className={`text-xs px-2 py-1 rounded-full ${getStatusClass(alert.status)}`}>
+            <span className={`text-xs px-2 py-1 rounded-full font-semibold shadow-sm ${getStatusClass(alert.status)}`}>
               {alert.status}
             </span>
           </div>
@@ -89,7 +89,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
 
         <div className="space-y-4">
           {/* Location details */}
-          <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+          <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
             <div className="flex items-center gap-2 text-white mb-2">
               <MapPin className="h-4 w-4 text-red-400" />
               <h4 className="font-medium">Location</h4>
@@ -104,7 +104,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
           </div>
 
           {/* Reporter details */}
-          <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+          <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
             <div className="flex items-center gap-2 text-white mb-2">
               <User className="h-4 w-4 text-blue-400" />
               <h4 className="font-medium">Reported by</h4>
@@ -124,7 +124,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
               <img 
                 src={alert.imageUrl} 
                 alt="Emergency photo" 
-                className="w-full h-48 object-cover rounded-lg border border-white/10" 
+                className="w-full h-48 object-cover rounded-lg border border-white/10 hover:border-white/20 transition-colors" 
               />
             </div>
           )}
