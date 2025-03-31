@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,7 @@ const LandingPage = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4 mb-20">
             <Button 
-              onClick={() => navigate('/')} 
+              onClick={() => navigate('/login')} // Changed from '/' to '/login'
               className="text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/30 py-6 px-8 rounded-xl animate-bounce"
               size="lg"
             >
@@ -45,6 +44,7 @@ const LandingPage = () => {
         </div>
       </div>
 
+      {/* Rest of the LandingPage remains the same */}
       {/* Service Cards */}
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
@@ -63,7 +63,7 @@ const LandingPage = () => {
                 <Button 
                   variant="outline" 
                   className="w-full border-fire/20 hover:bg-fire/10 hover:text-fire-light hover:border-fire/30 transition-all"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/login')}
                 >
                   Login as Fire Responder
                 </Button>

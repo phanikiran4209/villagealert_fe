@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Dialog,
@@ -10,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, useAlerts } from '@/context/AlertContext';
-import { Flame, Stethoscope, CloudLightning, Car, MapPin, Clock, User, AlertCircle } from 'lucide-react';
+import { Flame, Stethoscope, CloudLightning, Car, MapPin, Clock, User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AlertDialogProps {
@@ -22,9 +21,7 @@ interface AlertDialogProps {
 const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) => {
   const { updateAlertStatus } = useAlerts();
 
-  if (!alert) {
-    return null;
-  }
+  if (!alert) return null;
 
   const handleStatusUpdate = (status: Alert['status']) => {
     updateAlertStatus(alert.id, status);
@@ -32,157 +29,139 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
   };
 
   const getAlertTypeIcon = (type: Alert['type']) => {
+    const iconClass = "h-6 w-6";
     switch (type) {
-      case 'fire':
-        return <Flame className="h-6 w-6 text-fire" />;
-      case 'medical':
-        return <Stethoscope className="h-6 w-6 text-medical" />;
-      case 'disaster':
-        return <CloudLightning className="h-6 w-6 text-disaster" />;
-      case 'accident':
-        return <Car className="h-6 w-6 text-accident" />;
+      case 'fire': return <Flame className={`${iconClass} text-orange-500 animate-pulse`} />;
+      case 'medical': return <Stethoscope className={`${iconClass} text-red-500`} />;
+      case 'disaster': return <CloudLightning className={`${iconClass} text-purple-500 animate-bounce`} />;
+      case 'accident': return <Car className={`${iconClass} text-yellow-500`} />;
     }
   };
 
-  const getStatusClass = (status: Alert['status']) => {
+  const getStatusStyle = (status: Alert['status']) => {
     switch (status) {
-      case 'new':
-        return 'bg-red-500/20 text-red-300';
-      case 'viewed':
-        return 'bg-blue-500/20 text-blue-300';
-      case 'responded':
-        return 'bg-amber-500/20 text-amber-300';
-      case 'resolved':
-        return 'bg-green-500/20 text-green-300';
+      case 'new': return 'bg-red-500/20 text-red-400 border-red-500/30 animate-pulse';
+      case 'viewed': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'responded': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      case 'resolved': return 'bg-green-500/20 text-green-400 border-green-500/30';
     }
   };
 
   const getTypeGradient = (type: Alert['type']) => {
     switch (type) {
-      case 'fire':
-        return 'from-fire to-fire-dark';
-      case 'medical':
-        return 'from-medical to-medical-dark';
-      case 'disaster':
-        return 'from-disaster to-disaster-dark';
-      case 'accident':
-        return 'from-accident to-accident-dark';
+      case 'fire': return 'from-orange-600 via-red-600 to-orange-700';
+      case 'medical': return 'from-red-600 via-pink-600 to-red-700';
+      case 'disaster': return 'from-purple-600 via-indigo-600 to-purple-700';
+      case 'accident': return 'from-yellow-600 via-amber-600 to-yellow-700';
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[90vw] mx-auto max-h-[85vh] overflow-hidden rounded-xl">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className={`p-2 rounded-full bg-gradient-to-r ${getTypeGradient(alert.type)} shadow-lg shadow-${alert.type}/30`}>
+      <DialogContent className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700/50 shadow-2xl shadow-black/50 rounded-2xl w-[90vw] max-w-md max-h-[80vh] overflow-hidden text-white backdrop-blur-2xl">
+        {/* Header */}
+        <DialogHeader className="relative p-4">
+          <div className={`absolute inset-0 h-16 bg-gradient-to-r ${getTypeGradient(alert.type)} opacity-20 rounded-t-2xl`}></div>
+          <div className="relative flex items-center gap-3">
+            <div className="p-2 bg-white/10 rounded-lg backdrop-blur-lg border border-white/20">
               {getAlertTypeIcon(alert.type)}
             </div>
-            <DialogTitle className="text-xl text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
-              {alert.title}
-            </DialogTitle>
+            <div className="flex-1">
+              <DialogTitle className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 truncate">
+                {alert.title}
+              </DialogTitle>
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusStyle(alert.status)} border`}>
+                  {alert.status.toUpperCase()}
+                </span>
+                <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {new Date(alert.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between items-center pt-1">
-            <span 
-              className={`
-                text-xs px-2 py-1 rounded-full font-semibold shadow-sm
-                ${
-                  alert.type === 'fire' ? 'bg-fire/20 text-fire-light shadow-fire/20' :
-                  alert.type === 'medical' ? 'bg-medical/20 text-medical-light shadow-medical/20' :
-                  alert.type === 'disaster' ? 'bg-disaster/20 text-disaster-light shadow-disaster/20' :
-                  'bg-accident/20 text-accident-light shadow-accident/20'
-                }
-              `}
-            >
-              {alert.type} emergency
-            </span>
-            <span className={`text-xs px-2 py-1 rounded-full font-semibold shadow-sm ${getStatusClass(alert.status)}`}>
-              {alert.status}
-            </span>
-          </div>
-          <DialogDescription className="text-gray-300 mt-2">
-            {alert.description}
-          </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[40vh]">
-          <div className="space-y-4 px-1 py-2">
-            {/* Location details */}
-            <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="flex items-center gap-2 text-white mb-2">
-                <MapPin className="h-4 w-4 text-red-400" />
-                <h4 className="font-medium">Location</h4>
+        {/* Main Content */}
+        <ScrollArea className="max-h-[50vh] px-4 py-2">
+          <div className="space-y-4">
+            {/* Description */}
+            <DialogDescription className="text-gray-200 text-sm leading-relaxed bg-gray-800/50 p-3 rounded-lg border border-gray-700/50">
+              {alert.description || 'No description provided.'}
+            </DialogDescription>
+
+            {/* Location Card */}
+            <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 hover:border-gray-600 transition-all">
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin className="h-4 w-4 text-red-400 animate-bounce" />
+                <h3 className="font-semibold text-white text-sm">Location Details</h3>
               </div>
-              <p className="text-gray-300 text-sm">
-                {alert.location.address || 'No address provided'}
+              <p className="text-gray-300 text-sm ml-6 truncate">
+                {alert.location.address || 'Address not specified'}
               </p>
-              <div className="flex justify-between text-xs text-gray-400 mt-2">
+              <div className="flex justify-between text-xs text-gray-400 mt-2 ml-6">
                 <span>Lat: {alert.location.latitude.toFixed(6)}</span>
-                <span>Long: {alert.location.longitude.toFixed(6)}</span>
+                <span>Lon: {alert.location.longitude.toFixed(6)}</span>
               </div>
             </div>
 
-            {/* Reporter details */}
-            <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="flex items-center gap-2 text-white mb-2">
+            {/* Reporter Card */}
+            <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 hover:border-gray-600 transition-all">
+              <div className="flex items-center gap-2 mb-2">
                 <User className="h-4 w-4 text-blue-400" />
-                <h4 className="font-medium">Reported by</h4>
+                <h3 className="font-semibold text-white text-sm">Reported By</h3>
               </div>
-              <div className="flex justify-between items-center">
-                <p className="text-gray-300 text-sm">{alert.reportedBy || 'Anonymous'}</p>
-                <div className="flex items-center gap-1 text-xs text-gray-400">
-                  <Clock className="h-3 w-3" />
-                  <span>{new Date(alert.timestamp).toLocaleString()}</span>
-                </div>
-              </div>
+              <p className="text-gray-300 text-sm ml-6 truncate">
+                {alert.reportedBy || 'Anonymous User'}
+              </p>
             </div>
 
-            {/* Image preview */}
+            {/* Image Preview */}
             {alert.imageUrl && (
-              <div className="mt-4">
+              <div className="relative group">
                 <img 
                   src={alert.imageUrl} 
-                  alt="Emergency photo" 
-                  className="w-full h-48 object-cover rounded-lg border border-white/10 hover:border-white/20 transition-colors" 
+                  alt="Emergency scene" 
+                  className="w-full h-48 object-cover rounded-lg border border-gray-700/50 group-hover:border-gray-600 transition-all"
                 />
               </div>
             )}
           </div>
         </ScrollArea>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+        {/* Footer with Action Buttons */}
+        <DialogFooter className="p-4 pt-0 flex flex-wrap gap-2 bg-gray-900/50 border-t border-gray-700/50">
           {alert.status !== 'resolved' && (
             <>
               {alert.status === 'new' && (
                 <Button 
                   onClick={() => handleStatusUpdate('viewed')}
-                  className={`bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 w-full`}
+                  className="bg-blue-600 hover:bg-blue-700 flex-1 min-w-[120px] text-sm transition-all duration-300 shadow-lg shadow-blue-500/20"
                 >
-                  Mark as Viewed
+                  Mark Viewed
                 </Button>
               )}
               {(alert.status === 'viewed' || alert.status === 'new') && (
                 <Button 
                   onClick={() => handleStatusUpdate('responded')}
-                  className={`bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30 w-full`}
+                  className="bg-amber-600 hover:bg-amber-700 flex-1 min-w-[120px] text-sm transition-all duration-300 shadow-lg shadow-amber-500/20"
                 >
-                  Mark as Responded
+                  Mark Responded
                 </Button>
               )}
+              <Button 
+                onClick={() => handleStatusUpdate('resolved')}
+                className="bg-green-600 hover:bg-green-700 flex-1 min-w-[120px] text-sm transition-all duration-300 shadow-lg shadow-green-500/20"
+              >
+                Mark Resolved
+              </Button>
             </>
-          )}
-          {alert.status !== 'resolved' && (
-            <Button 
-              onClick={() => handleStatusUpdate('resolved')}
-              className={`bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full`}
-            >
-              Mark as Resolved
-            </Button>
           )}
           <Button 
             onClick={() => onOpenChange(false)}
             variant="outline"
-            className="border-white/20 hover:bg-white/10 w-full sm:w-auto"
+            className="flex-1 min-w-[120px] text-sm border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-300"
           >
             Close
           </Button>

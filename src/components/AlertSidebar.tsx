@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sidebar, 
@@ -19,30 +18,30 @@ import { format } from 'date-fns';
 const getAlertTypeIcon = (type: Alert['type']) => {
   switch (type) {
     case 'fire':
-      return <Flame className="text-fire" />;
+      return <Flame className="text-orange-500 glow-orange" />;
     case 'medical':
-      return <Stethoscope className="text-medical" />;
+      return <Stethoscope className="text-blue-500 glow-blue" />;
     case 'disaster':
-      return <CloudLightning className="text-disaster" />;
+      return <CloudLightning className="text-purple-500 glow-purple" />;
     case 'accident':
-      return <Car className="text-accident" />;
+      return <Car className="text-red-500 glow-red" />;
     default:
-      return <Bell />;
+      return <Bell className="text-gray-500" />;
   }
 };
 
 const getAlertTypeClass = (type: Alert['type']) => {
   switch (type) {
     case 'fire':
-      return 'border-l-4 border-fire';
+      return 'border-l-4 border-orange-500 bg-orange-50/50';
     case 'medical':
-      return 'border-l-4 border-medical';
+      return 'border-l-4 border-blue-500 bg-blue-50/50';
     case 'disaster':
-      return 'border-l-4 border-disaster';
+      return 'border-l-4 border-purple-500 bg-purple-50/50';
     case 'accident':
-      return 'border-l-4 border-accident';
+      return 'border-l-4 border-red-500 bg-red-50/50';
     default:
-      return 'border-l-4 border-gray-400';
+      return 'border-l-4 border-gray-400 bg-gray-50/50';
   }
 };
 
@@ -55,7 +54,6 @@ const AlertSidebar: React.FC<AlertSidebarProps> = ({ onAlertClick }) => {
   const { alerts, newAlerts } = useAlerts();
   const navigate = useNavigate();
 
-  // Filter alerts based on user role
   const filteredAlerts = userRole === 'public' 
     ? alerts 
     : alerts.filter(alert => alert.type === userRole);
@@ -66,55 +64,57 @@ const AlertSidebar: React.FC<AlertSidebarProps> = ({ onAlertClick }) => {
   };
 
   return (
-    <Sidebar className="border-r border-gray-200">
-      <SidebarHeader className="p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Bell className="h-6 w-6" />
-          <span className="font-bold text-lg">VillageSiren</span>
+    <Sidebar className="border-r border-gray-200 bg-gradient-to-b from-gray-50 to-white shadow-lg">
+      <SidebarHeader className="p-4 flex justify-between items-center bg-white/80 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <Bell className="h-6 w-6 text-indigo-600 glow-indigo animate-pulse" />
+          <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            VillageSiren
+          </span>
         </div>
         {newAlerts > 0 && (
-          <Badge variant="destructive" className="ml-2">
+          <Badge className="ml-2 bg-red-500 glow-red animate-pulse">
             {newAlerts} new
           </Badge>
         )}
       </SidebarHeader>
       
-      <Separator />
+      <Separator className="bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
       
       <SidebarContent>
         <div className="p-4">
-          <h3 className="font-medium text-lg">
+          <h3 className="font-semibold text-xl text-gray-800 mb-4">
             {userRole === 'public' 
               ? 'Your Reported Alerts' 
               : `${userRole?.charAt(0).toUpperCase()}${userRole?.slice(1)} Alerts`}
           </h3>
           
-          <ScrollArea className="h-[calc(100vh-200px)] mt-4">
+          <ScrollArea className="h-[calc(100vh-200px)]">
             {filteredAlerts.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {filteredAlerts.map((alert) => (
                   <div 
                     key={alert.id}
-                    className={`p-3 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors ${getAlertTypeClass(alert.type)} ${alert.status === 'new' ? 'bg-gray-50' : ''}`}
+                    className={`p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${getAlertTypeClass(alert.type)} ${alert.status === 'new' ? 'animate-pulse bg-opacity-75' : ''}`}
                     onClick={() => onAlertClick(alert)}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-4">
                       <div className="mt-1">
                         {getAlertTypeIcon(alert.type)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="font-medium truncate">{alert.title}</h4>
+                          <h4 className="font-semibold text-gray-800 truncate">{alert.title}</h4>
                           {alert.status === 'new' && (
-                            <Badge className="ml-2 bg-blue-500">New</Badge>
+                            <Badge className="ml-2 bg-indigo-500 glow-indigo">New</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{alert.description}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-gray-400">
+                        <p className="text-sm text-gray-600 line-clamp-2">{alert.description}</p>
+                        <div className="flex justify-between items-center mt-3">
+                          <span className="text-xs text-gray-500 font-medium">
                             {format(alert.timestamp, 'MMM d, h:mm a')}
                           </span>
-                          <span className="text-xs capitalize px-2 py-1 rounded-full bg-gray-100">
+                          <span className="text-xs capitalize px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm shadow-sm">
                             {alert.status}
                           </span>
                         </div>
@@ -124,18 +124,23 @@ const AlertSidebar: React.FC<AlertSidebarProps> = ({ onAlertClick }) => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>No alerts found</p>
+              <div className="text-center py-12 text-gray-500 bg-white/50 rounded-lg shadow-inner">
+                <Bell className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+                <p className="font-medium">No alerts found</p>
               </div>
             )}
           </ScrollArea>
         </div>
       </SidebarContent>
       
-      <SidebarFooter className="p-4">
-        <Button variant="outline" className="w-full flex items-center gap-2" onClick={handleLogout}>
+      <SidebarFooter className="p-4 bg-white/80 backdrop-blur-sm">
+        <Button 
+          variant="outline" 
+          className="w-full flex items-center gap-2 border-indigo-500 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-600 transition-all duration-300 glow-indigo"
+          onClick={handleLogout}
+        >
           <LogOut className="h-4 w-4" />
-          <span>Logout</span>
+          <span className="font-medium">Logout</span>
         </Button>
       </SidebarFooter>
     </Sidebar>
