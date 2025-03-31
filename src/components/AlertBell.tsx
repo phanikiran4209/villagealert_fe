@@ -1,19 +1,8 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Alert, useAlerts } from '@/context/AlertContext';
-import { format } from 'date-fns';
+import { Bell } from 'lucide-react';
 
 interface AlertBellProps {
   onAlertClick: (alert: Alert) => void;
@@ -21,107 +10,119 @@ interface AlertBellProps {
 
 const AlertBell: React.FC<AlertBellProps> = ({ onAlertClick }) => {
   const { alerts, newAlerts } = useAlerts();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Sort alerts by timestamp (newest first)
-  const sortedAlerts = [...alerts].sort((a, b) => 
-    b.timestamp.getTime() - a.timestamp.getTime()
-  );
-
-  const getAlertTypeClass = (type: Alert['type']) => {
-    switch (type) {
-      case 'fire':
-        return 'border-l-4 border-fire';
-      case 'medical':
-        return 'border-l-4 border-medical';
-      case 'disaster':
-        return 'border-l-4 border-disaster';
-      case 'accident':
-        return 'border-l-4 border-accident';
-      default:
-        return 'border-l-4 border-gray-400';
-    }
-  };
-
-  const handleAlertClick = (alert: Alert) => {
-    onAlertClick(alert);
-    setOpen(false);
-  };
+  if (alerts.length === 0) {
+    return null;
+  }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button 
-          size="icon" 
-          variant="outline" 
-          className="fixed bottom-4 right-4 rounded-full p-4 shadow-lg hover:bg-gray-100 bg-white w-14 h-14"
+    <>
+      {/* Bell Button */}
+      <div className="fixed bottom-24 right-8 z-40">
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`
+            relative rounded-full w-14 h-14 p-0 bg-gradient-to-r from-red-500 to-red-600
+            hover:shadow-lg hover:shadow-red-500/50 transition-all duration-300
+            ${isOpen ? 'ring-2 ring-white scale-110' : ''}
+            ${newAlerts > 0 ? 'animate-[bell-shake_0.5s_ease-in-out]' : ''}
+          `}
+          aria-label="Alerts"
         >
-          <div className="relative">
-            <Bell className={`h-6 w-6 ${newAlerts > 0 ? 'animate-bell-shake' : ''}`} />
-            {newAlerts > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-5 w-5">
-                <span className="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <Badge variant="destructive" className="relative inline-flex rounded-full h-5 w-5 justify-center items-center text-[10px] p-0">
-                  {newAlerts}
-                </Badge>
+          <Bell className="h-6 w-6 text-white" />
+          
+          {/* Notification Badge */}
+          {newAlerts > 0 && (
+            <>
+              <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-600 text-white text-xs flex items-center justify-center border-2 border-white">
+                {newAlerts}
               </span>
+              <span className="absolute w-full h-full rounded-full bg-red-500 animate-pulse opacity-75"></span>
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Alerts Panel */}
+      {isOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+            onClick={() => setIsOpen(false)}
+          ></div>
+          <div className="fixed bottom-40 right-8 w-72 max-h-96 overflow-y-auto bg-gray-900/90 backdrop-blur-xl rounded-lg border border-white/10 shadow-xl z-40 p-3">
+            <h3 className="text-white font-bold mb-2 pb-2 border-b border-gray-700">Recent Alerts</h3>
+            
+            {alerts.length === 0 ? (
+              <p className="text-gray-400 text-center py-4">No alerts</p>
+            ) : (
+              <div className="space-y-2">
+                {alerts.map((alert) => (
+                  <div 
+                    key={alert.id} 
+                    className={`
+                      p-3 rounded-md cursor-pointer transition-all border
+                      ${
+                        alert.status === 'new' 
+                          ? 'bg-black/60 border-white/20 shadow-md' 
+                          : 'bg-black/40 border-white/10'
+                      }
+                      ${
+                        alert.type === 'fire' ? 'hover:border-fire/50' :
+                        alert.type === 'medical' ? 'hover:border-medical/50' :
+                        alert.type === 'disaster' ? 'hover:border-disaster/50' :
+                        'hover:border-accident/50'
+                      }
+                      hover:bg-black/70
+                    `}
+                    onClick={() => {
+                      onAlertClick(alert);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className={`font-medium text-white ${alert.status === 'new' ? 'font-bold' : ''}`}>
+                        {alert.title}
+                      </h4>
+                      <span 
+                        className={`
+                          text-xs px-2 py-1 rounded-full
+                          ${
+                            alert.type === 'fire' ? 'bg-fire/20 text-fire-light' :
+                            alert.type === 'medical' ? 'bg-medical/20 text-medical-light' :
+                            alert.type === 'disaster' ? 'bg-disaster/20 text-disaster-light' :
+                            'bg-accident/20 text-accident-light'
+                          }
+                        `}
+                      >
+                        {alert.type}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-300 mt-1">
+                      {alert.description.length > 50 
+                        ? `${alert.description.substring(0, 50)}...` 
+                        : alert.description
+                      }
+                    </p>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs text-gray-400">
+                        {new Date(alert.timestamp).toLocaleTimeString()}
+                      </span>
+                      {alert.status === 'new' && (
+                        <span className="text-xs bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full">
+                          New
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Notifications
-            {newAlerts > 0 && (
-              <Badge variant="destructive" className="ml-2">
-                {newAlerts} new
-              </Badge>
-            )}
-          </SheetTitle>
-        </SheetHeader>
-        <Separator className="my-4" />
-        <ScrollArea className="h-[calc(100vh-150px)]">
-          {sortedAlerts.length > 0 ? (
-            <div className="space-y-4 pr-4">
-              {sortedAlerts.map((alert) => (
-                <div 
-                  key={alert.id}
-                  className={`p-3 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 transition-colors ${getAlertTypeClass(alert.type)} ${alert.status === 'new' ? 'bg-gray-50' : ''}`}
-                  onClick={() => handleAlertClick(alert)}
-                >
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-medium">{alert.title}</h4>
-                    {alert.status === 'new' && (
-                      <Badge className="ml-2 bg-blue-500">New</Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500 line-clamp-2 mt-1">{alert.description}</p>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-400">
-                      {format(alert.timestamp, 'MMM d, h:mm a')}
-                    </span>
-                    <Badge className={`
-                      ${alert.type === 'fire' ? 'bg-fire' : 
-                        alert.type === 'medical' ? 'bg-medical' : 
-                        alert.type === 'disaster' ? 'bg-disaster' : 
-                        'bg-accident'} text-white text-xs
-                    `}>
-                      {alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <p>No notifications</p>
-            </div>
-          )}
-        </ScrollArea>
-      </SheetContent>
-    </Sheet>
+        </>
+      )}
+    </>
   );
 };
 

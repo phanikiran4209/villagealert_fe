@@ -3,16 +3,14 @@ import React from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, useAlerts } from '@/context/AlertContext';
-import { Badge } from '@/components/ui/badge';
-import { formatDistanceToNow } from 'date-fns';
-import { MapPin, Clock, User } from 'lucide-react';
+import { Flame, Stethoscope, CloudLightning, Car, MapPin, Clock, User, AlertCircle } from 'lucide-react';
 
 interface AlertDialogProps {
   alert: Alert | null;
@@ -23,124 +21,149 @@ interface AlertDialogProps {
 const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) => {
   const { updateAlertStatus } = useAlerts();
 
-  if (!alert) return null;
+  if (!alert) {
+    return null;
+  }
 
-  const handleStatusChange = (status: Alert['status']) => {
+  const handleStatusUpdate = (status: Alert['status']) => {
     updateAlertStatus(alert.id, status);
     onOpenChange(false);
   };
 
-  const getColorByType = (type: Alert['type']) => {
+  const getAlertTypeIcon = (type: Alert['type']) => {
     switch (type) {
       case 'fire':
-        return 'bg-fire text-white';
+        return <Flame className="h-6 w-6 text-fire" />;
       case 'medical':
-        return 'bg-medical text-white';
+        return <Stethoscope className="h-6 w-6 text-medical" />;
       case 'disaster':
-        return 'bg-disaster text-white';
+        return <CloudLightning className="h-6 w-6 text-disaster" />;
       case 'accident':
-        return 'bg-accident text-white';
-      default:
-        return 'bg-gray-500 text-white';
+        return <Car className="h-6 w-6 text-accident" />;
+    }
+  };
+
+  const getStatusClass = (status: Alert['status']) => {
+    switch (status) {
+      case 'new':
+        return 'bg-red-500/20 text-red-300';
+      case 'viewed':
+        return 'bg-blue-500/20 text-blue-300';
+      case 'responded':
+        return 'bg-amber-500/20 text-amber-300';
+      case 'resolved':
+        return 'bg-green-500/20 text-green-300';
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-lg mx-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span>{alert.title}</span>
-            <Badge className={getColorByType(alert.type)}>
-              {alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}
-            </Badge>
-          </DialogTitle>
-          <DialogDescription className="flex items-center gap-1 text-gray-500">
-            <Clock className="h-4 w-4" />
-            <span>
-              Reported {formatDistanceToNow(alert.timestamp, { addSuffix: true })}
+          <div className="flex items-center gap-2">
+            {getAlertTypeIcon(alert.type)}
+            <DialogTitle className="text-xl">{alert.title}</DialogTitle>
+          </div>
+          <div className="flex justify-between items-center pt-1">
+            <span 
+              className={`
+                text-xs px-2 py-1 rounded-full 
+                ${
+                  alert.type === 'fire' ? 'bg-fire/20 text-fire-light' :
+                  alert.type === 'medical' ? 'bg-medical/20 text-medical-light' :
+                  alert.type === 'disaster' ? 'bg-disaster/20 text-disaster-light' :
+                  'bg-accident/20 text-accident-light'
+                }
+              `}
+            >
+              {alert.type} emergency
             </span>
+            <span className={`text-xs px-2 py-1 rounded-full ${getStatusClass(alert.status)}`}>
+              {alert.status}
+            </span>
+          </div>
+          <DialogDescription className="text-gray-300 mt-2">
+            {alert.description}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
+          {/* Location details */}
+          <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+            <div className="flex items-center gap-2 text-white mb-2">
+              <MapPin className="h-4 w-4 text-red-400" />
+              <h4 className="font-medium">Location</h4>
+            </div>
+            <p className="text-gray-300 text-sm">
+              {alert.location.address || 'No address provided'}
+            </p>
+            <div className="flex justify-between text-xs text-gray-400 mt-2">
+              <span>Lat: {alert.location.latitude.toFixed(6)}</span>
+              <span>Long: {alert.location.longitude.toFixed(6)}</span>
+            </div>
+          </div>
+
+          {/* Reporter details */}
+          <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+            <div className="flex items-center gap-2 text-white mb-2">
+              <User className="h-4 w-4 text-blue-400" />
+              <h4 className="font-medium">Reported by</h4>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="text-gray-300 text-sm">{alert.reportedBy || 'Anonymous'}</p>
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <Clock className="h-3 w-3" />
+                <span>{new Date(alert.timestamp).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Image preview */}
           {alert.imageUrl && (
-            <div className="aspect-video overflow-hidden rounded-md">
-              <img
-                src={alert.imageUrl}
-                alt="Emergency situation"
-                className="w-full h-full object-cover"
+            <div className="mt-4">
+              <img 
+                src={alert.imageUrl} 
+                alt="Emergency photo" 
+                className="w-full h-48 object-cover rounded-lg border border-white/10" 
               />
             </div>
           )}
-          
-          <div className="space-y-2">
-            <h4 className="font-medium">Description</h4>
-            <p className="text-gray-700">{alert.description}</p>
-          </div>
-          
-          <div className="space-y-2">
-            <h4 className="font-medium flex items-center gap-1">
-              <MapPin className="h-4 w-4" />
-              Location
-            </h4>
-            <p className="text-gray-700">{alert.location.address}</p>
-            <p className="text-sm text-gray-500">
-              Coordinates: {alert.location.latitude.toFixed(6)}, {alert.location.longitude.toFixed(6)}
-            </p>
-          </div>
-          
-          {alert.reportedBy && (
-            <div className="space-y-2">
-              <h4 className="font-medium flex items-center gap-1">
-                <User className="h-4 w-4" />
-                Reported By
-              </h4>
-              <p className="text-gray-700">{alert.reportedBy}</p>
-            </div>
-          )}
-          
-          <div className="space-y-2">
-            <h4 className="font-medium">Status</h4>
-            <Badge className={`
-              ${alert.status === 'new' ? 'bg-blue-500' : 
-                alert.status === 'viewed' ? 'bg-yellow-500' : 
-                alert.status === 'responded' ? 'bg-orange-500' : 
-                'bg-green-500'} text-white
-            `}>
-              {alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}
-            </Badge>
-          </div>
         </div>
-        
-        <DialogFooter className="flex justify-between sm:justify-end gap-2">
+
+        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
           {alert.status !== 'resolved' && (
             <>
               {alert.status === 'new' && (
-                <Button variant="outline" onClick={() => handleStatusChange('viewed')}>
+                <Button 
+                  onClick={() => handleStatusUpdate('viewed')}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 w-full"
+                >
                   Mark as Viewed
                 </Button>
               )}
-              {(alert.status === 'new' || alert.status === 'viewed') && (
+              {(alert.status === 'viewed' || alert.status === 'new') && (
                 <Button 
-                  className={getColorByType(alert.type)}
-                  onClick={() => handleStatusChange('responded')}
+                  onClick={() => handleStatusUpdate('responded')}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30 w-full"
                 >
-                  Respond
+                  Mark as Responded
                 </Button>
               )}
-              {alert.status === 'responded' && (
+              {alert.status !== 'resolved' && (
                 <Button 
-                  variant="outline"
-                  className="bg-green-500 text-white hover:bg-green-600"
-                  onClick={() => handleStatusChange('resolved')}
+                  onClick={() => handleStatusUpdate('resolved')}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full"
                 >
-                  Mark Resolved
+                  Mark as Resolved
                 </Button>
               )}
             </>
           )}
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button 
+            onClick={() => onOpenChange(false)}
+            variant="outline"
+            className="border-white/20 hover:bg-white/10 w-full sm:w-auto"
+          >
             Close
           </Button>
         </DialogFooter>
