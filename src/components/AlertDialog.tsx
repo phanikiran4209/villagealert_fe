@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert, useAlerts } from '@/context/AlertContext';
 import { Flame, Stethoscope, CloudLightning, Car, MapPin, Clock, User, AlertCircle } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AlertDialogProps {
   alert: Alert | null;
@@ -56,13 +57,30 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
     }
   };
 
+  const getTypeGradient = (type: Alert['type']) => {
+    switch (type) {
+      case 'fire':
+        return 'from-fire to-fire-dark';
+      case 'medical':
+        return 'from-medical to-medical-dark';
+      case 'disaster':
+        return 'from-disaster to-disaster-dark';
+      case 'accident':
+        return 'from-accident to-accident-dark';
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[95vw] mx-auto overflow-y-auto max-h-[90vh]">
+      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[95vw] mx-auto max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            {getAlertTypeIcon(alert.type)}
-            <DialogTitle className="text-xl">{alert.title}</DialogTitle>
+            <div className={`p-2 rounded-full bg-gradient-to-r ${getTypeGradient(alert.type)} shadow-lg`}>
+              {getAlertTypeIcon(alert.type)}
+            </div>
+            <DialogTitle className="text-xl text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+              {alert.title}
+            </DialogTitle>
           </div>
           <div className="flex justify-between items-center pt-1">
             <span 
@@ -87,48 +105,50 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Location details */}
-          <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
-            <div className="flex items-center gap-2 text-white mb-2">
-              <MapPin className="h-4 w-4 text-red-400" />
-              <h4 className="font-medium">Location</h4>
-            </div>
-            <p className="text-gray-300 text-sm">
-              {alert.location.address || 'No address provided'}
-            </p>
-            <div className="flex justify-between text-xs text-gray-400 mt-2">
-              <span>Lat: {alert.location.latitude.toFixed(6)}</span>
-              <span>Long: {alert.location.longitude.toFixed(6)}</span>
-            </div>
-          </div>
-
-          {/* Reporter details */}
-          <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
-            <div className="flex items-center gap-2 text-white mb-2">
-              <User className="h-4 w-4 text-blue-400" />
-              <h4 className="font-medium">Reported by</h4>
-            </div>
-            <div className="flex justify-between items-center">
-              <p className="text-gray-300 text-sm">{alert.reportedBy || 'Anonymous'}</p>
-              <div className="flex items-center gap-1 text-xs text-gray-400">
-                <Clock className="h-3 w-3" />
-                <span>{new Date(alert.timestamp).toLocaleString()}</span>
+        <ScrollArea className="max-h-[50vh]">
+          <div className="space-y-4 px-1 py-2">
+            {/* Location details */}
+            <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="flex items-center gap-2 text-white mb-2">
+                <MapPin className="h-4 w-4 text-red-400" />
+                <h4 className="font-medium">Location</h4>
+              </div>
+              <p className="text-gray-300 text-sm">
+                {alert.location.address || 'No address provided'}
+              </p>
+              <div className="flex justify-between text-xs text-gray-400 mt-2">
+                <span>Lat: {alert.location.latitude.toFixed(6)}</span>
+                <span>Long: {alert.location.longitude.toFixed(6)}</span>
               </div>
             </div>
-          </div>
 
-          {/* Image preview */}
-          {alert.imageUrl && (
-            <div className="mt-4">
-              <img 
-                src={alert.imageUrl} 
-                alt="Emergency photo" 
-                className="w-full h-48 object-cover rounded-lg border border-white/10 hover:border-white/20 transition-colors" 
-              />
+            {/* Reporter details */}
+            <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="flex items-center gap-2 text-white mb-2">
+                <User className="h-4 w-4 text-blue-400" />
+                <h4 className="font-medium">Reported by</h4>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="text-gray-300 text-sm">{alert.reportedBy || 'Anonymous'}</p>
+                <div className="flex items-center gap-1 text-xs text-gray-400">
+                  <Clock className="h-3 w-3" />
+                  <span>{new Date(alert.timestamp).toLocaleString()}</span>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Image preview */}
+            {alert.imageUrl && (
+              <div className="mt-4">
+                <img 
+                  src={alert.imageUrl} 
+                  alt="Emergency photo" 
+                  className="w-full h-48 object-cover rounded-lg border border-white/10 hover:border-white/20 transition-colors" 
+                />
+              </div>
+            )}
+          </div>
+        </ScrollArea>
 
         <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
           {alert.status !== 'resolved' && (
@@ -136,7 +156,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
               {alert.status === 'new' && (
                 <Button 
                   onClick={() => handleStatusUpdate('viewed')}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 w-full"
+                  className={`bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 w-full`}
                 >
                   Mark as Viewed
                 </Button>
@@ -144,14 +164,14 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
               {(alert.status === 'viewed' || alert.status === 'new') && (
                 <Button 
                   onClick={() => handleStatusUpdate('responded')}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30 w-full"
+                  className={`bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30 w-full`}
                 >
                   Mark as Responded
                 </Button>
               )}
               <Button 
                 onClick={() => handleStatusUpdate('resolved')}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full"
+                className={`bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full`}
               >
                 Mark as Resolved
               </Button>
