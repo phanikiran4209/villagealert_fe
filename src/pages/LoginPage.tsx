@@ -1,4 +1,3 @@
-// pages/LoginPage.tsx (new file)
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +25,11 @@ interface LoginOption {
   glowColor: string;
 }
 
+interface Credentials {
+  username: string;
+  password: string;
+}
+
 const LoginPage = () => {
   const { login, isAuthenticated, userRole } = useAuth();
   const navigate = useNavigate();
@@ -34,6 +38,15 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  // Predefined credentials for each role
+  const credentialsMap: Record<UserRole, Credentials> = {
+    fire: { username: 'fireadmin', password: 'password' },
+    medical: { username: 'medicaladmin', password: 'password' },
+    disaster: { username: 'disasteradmin', password: 'password' },
+    accident: { username: 'accidentadmin', password: 'password' },
+    public: { username: 'phani', password: 'password' },
+  };
 
   // Redirect authenticated users
   if (isAuthenticated) {
@@ -96,7 +109,8 @@ const LoginPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Check if username and password are provided
     if (!username || !password) {
       toast({
         title: "Error",
@@ -106,6 +120,23 @@ const LoginPage = () => {
       return;
     }
 
+    // Get the expected credentials for the selected role
+    const expectedCredentials = credentialsMap[selectedRole];
+
+    // Validate the entered credentials
+    if (
+      username !== expectedCredentials.username ||
+      password !== expectedCredentials.password
+    ) {
+      toast({
+        title: "Error",
+        description: "Invalid username or password",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // If credentials are correct, proceed with login
     login(selectedRole);
     
     toast({
@@ -146,7 +177,7 @@ const LoginPage = () => {
         <p className="text-gray-300 text-lg animate-fade-in">Emergency Response System</p>
         <Button 
           variant="link" 
-          onClick={() => navigate('/')} // Changed from '/welcome' to '/'
+          onClick={() => navigate('/')} 
           className="mt-2 text-purple-400 hover:text-purple-300 animate-bounce"
         >
           Back to Home
