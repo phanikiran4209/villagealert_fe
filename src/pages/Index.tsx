@@ -1,11 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import LoginForm from '@/components/LoginForm';
 import { useAuth } from '@/context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Flame, Stethoscope, CloudLightning, Car, User } from 'lucide-react';
 
 const Index = () => {
   const { isAuthenticated, userRole } = useAuth();
+  const navigate = useNavigate();
+
+  // Fade-in effect
+  useEffect(() => {
+    document.body.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
 
   // Redirect authenticated users
   if (isAuthenticated) {
@@ -31,6 +42,13 @@ const Index = () => {
           VillageSiren
         </h1>
         <p className="text-gray-300 text-lg animate-fade-in">Emergency Response System</p>
+        <Button 
+          variant="link" 
+          onClick={() => navigate('/welcome')}
+          className="mt-2 text-purple-400 hover:text-purple-300 animate-bounce"
+        >
+          Learn More
+        </Button>
       </div>
       
       <LoginForm />
@@ -38,6 +56,37 @@ const Index = () => {
       {/* Enhanced decorative elements */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 text-sm font-medium">
         Protecting communities together • Fast • Reliable • Secure
+      </div>
+
+      {/* Emergency service icons */}
+      <div className="absolute left-10 top-1/3 transform -translate-y-1/2 hidden lg:flex flex-col gap-6">
+        <div className="p-3 rounded-full bg-gradient-to-r from-fire to-fire-dark shadow-lg shadow-fire/30 animate-pulse delay-100">
+          <Flame className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-medical to-medical-dark shadow-lg shadow-medical/30 animate-pulse delay-300">
+          <Stethoscope className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-disaster to-disaster-dark shadow-lg shadow-disaster/30 animate-pulse delay-500">
+          <CloudLightning className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-accident to-accident-dark shadow-lg shadow-accident/30 animate-pulse delay-700">
+          <Car className="h-6 w-6 text-white" />
+        </div>
+      </div>
+
+      <div className="absolute right-10 top-1/3 transform -translate-y-1/2 hidden lg:flex flex-col gap-6">
+        <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 shadow-lg shadow-purple/30 animate-pulse delay-200">
+          <User className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg shadow-blue/30 animate-pulse delay-400">
+          <User className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-pink-500 to-pink-700 shadow-lg shadow-pink/30 animate-pulse delay-600">
+          <User className="h-6 w-6 text-white" />
+        </div>
+        <div className="p-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-700 shadow-lg shadow-amber/30 animate-pulse delay-800">
+          <User className="h-6 w-6 text-white" />
+        </div>
       </div>
     </div>
   );

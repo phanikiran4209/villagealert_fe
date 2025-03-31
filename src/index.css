@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,91 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass-morphism {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
+  }
+  
+  .neo-blur {
+    @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70;
+  }
+  
+  .text-gradient-fire {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-fire via-fire-light to-fire-dark;
+  }
+  
+  .text-gradient-medical {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-medical via-medical-light to-medical-dark;
+  }
+  
+  .text-gradient-disaster {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-disaster via-disaster-light to-disaster-dark;
+  }
+  
+  .text-gradient-accident {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accident via-accident-light to-accident-dark;
+  }
+  
+  .glow-text-fire {
+    text-shadow: 0 0 8px rgba(229, 62, 62, 0.6);
+  }
+  
+  .glow-text-medical {
+    text-shadow: 0 0 8px rgba(56, 161, 105, 0.6);
+  }
+  
+  .glow-text-disaster {
+    text-shadow: 0 0 8px rgba(49, 130, 206, 0.6);
+  }
+  
+  .glow-text-accident {
+    text-shadow: 0 0 8px rgba(237, 137, 54, 0.6);
+  }
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

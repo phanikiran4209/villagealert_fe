@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { AlertProvider } from "@/context/AlertContext";
 import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import PublicDashboard from "./pages/PublicDashboard";
 import EmergencyDashboard from "./pages/EmergencyDashboard";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/welcome" element={<LandingPage />} />
               <Route path="/public" element={<PublicDashboard />} />
               <Route path="/dashboard/:serviceType" element={<EmergencyDashboard />} />
               <Route path="*" element={<NotFound />} />

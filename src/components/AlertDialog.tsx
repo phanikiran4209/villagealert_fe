@@ -72,10 +72,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[95vw] mx-auto max-h-[90vh] overflow-hidden">
+      <DialogContent className="border border-white/10 bg-gray-900/90 backdrop-blur-xl text-white shadow-xl max-w-md md:max-w-lg w-[90vw] mx-auto max-h-[85vh] overflow-hidden rounded-xl">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className={`p-2 rounded-full bg-gradient-to-r ${getTypeGradient(alert.type)} shadow-lg`}>
+            <div className={`p-2 rounded-full bg-gradient-to-r ${getTypeGradient(alert.type)} shadow-lg shadow-${alert.type}/30`}>
               {getAlertTypeIcon(alert.type)}
             </div>
             <DialogTitle className="text-xl text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
@@ -105,7 +105,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[50vh]">
+        <ScrollArea className="max-h-[40vh]">
           <div className="space-y-4 px-1 py-2">
             {/* Location details */}
             <div className="bg-black/30 rounded-lg p-3 border border-white/10 hover:border-white/20 transition-colors">
@@ -169,13 +169,15 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
                   Mark as Responded
                 </Button>
               )}
-              <Button 
-                onClick={() => handleStatusUpdate('resolved')}
-                className={`bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full`}
-              >
-                Mark as Resolved
-              </Button>
             </>
+          )}
+          {alert.status !== 'resolved' && (
+            <Button 
+              onClick={() => handleStatusUpdate('resolved')}
+              className={`bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full`}
+            >
+              Mark as Resolved
+            </Button>
           )}
           <Button 
             onClick={() => onOpenChange(false)}
