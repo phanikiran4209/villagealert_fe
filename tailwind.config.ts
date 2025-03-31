@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,26 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				fire: {
+					DEFAULT: '#e53e3e',
+					light: '#fc8181',
+					dark: '#c53030',
+				},
+				medical: {
+					DEFAULT: '#38a169',
+					light: '#68d391',
+					dark: '#2f855a',
+				},
+				disaster: {
+					DEFAULT: '#3182ce',
+					light: '#63b3ed',
+					dark: '#2c5282',
+				},
+				accident: {
+					DEFAULT: '#ed8936',
+					light: '#fbd38d',
+					dark: '#c05621',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +105,25 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-ring': {
+					'0%': { transform: 'scale(0.8)', opacity: '0.8' },
+					'50%': { transform: 'scale(1)', opacity: '0.4' },
+					'100%': { transform: 'scale(1.2)', opacity: '0' }
+				},
+				'bell-shake': {
+					'0%': { transform: 'rotate(0deg)' },
+					'25%': { transform: 'rotate(10deg)' },
+					'50%': { transform: 'rotate(0deg)' },
+					'75%': { transform: 'rotate(-10deg)' },
+					'100%': { transform: 'rotate(0deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-ring': 'pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite',
+				'bell-shake': 'bell-shake 0.5s ease-in-out'
 			}
 		}
 	},
