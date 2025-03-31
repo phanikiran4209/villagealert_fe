@@ -149,14 +149,12 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ alert, open, onOpenChange }) 
                   Mark as Responded
                 </Button>
               )}
-              {alert.status !== 'resolved' && (
-                <Button 
-                  onClick={() => handleStatusUpdate('resolved')}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full"
-                >
-                  Mark as Resolved
-                </Button>
-              )}
+              <Button 
+                onClick={() => handleStatusUpdate('resolved')}
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg shadow-green-500/30 w-full"
+              >
+                Mark as Resolved
+              </Button>
             </>
           )}
           <Button 
